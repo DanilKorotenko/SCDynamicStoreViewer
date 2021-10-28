@@ -13,6 +13,7 @@
 @property (strong) IBOutlet NSWindow *window;
 @property (strong) IBOutlet NSOutlineView *outlineView;
 @property (strong) IBOutlet NSTextView *textView;
+@property (strong) IBOutlet NSTextField *fullPathLabel;
 
 @end
 
@@ -108,10 +109,12 @@
         CFPropertyListRef propertyList = SCDynamicStoreCopyValue(NULL, fullPathRef);
         NSDictionary *value = CFBridgingRelease(propertyList);
 
+        [self.fullPathLabel setStringValue:fullPath];
         [self.textView setString:[value description]];
     }
     else
     {
+        [self.fullPathLabel setStringValue:@""];
         [self.textView setString:@""];
     }
 }
