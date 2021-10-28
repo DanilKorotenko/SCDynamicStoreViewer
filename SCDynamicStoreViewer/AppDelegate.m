@@ -12,6 +12,7 @@
 
 @property (strong) IBOutlet NSWindow *window;
 @property (strong) IBOutlet NSOutlineView *outlineView;
+@property (strong) IBOutlet NSTextView *textView;
 
 @end
 
@@ -90,16 +91,30 @@
 - (nullable id)outlineView:(NSOutlineView *)outlineView
     objectValueForTableColumn:(nullable NSTableColumn *)tableColumn byItem:(nullable id)item
 {
-//    if ([item isKindOfClass:[NSString class]])
-//    {
-//        return [_outlineViewItems objectForKey:item];
-//    }
-
     NSDictionary *currentItem = (item == nil) ? _outlineViewItems : (NSDictionary*)item;
 
     return [currentItem objectForKey:@"title"];
 }
 
+- (void)outlineViewSelectionDidChange:(NSNotification *)notification
+{
+    NSDictionary *selectedItem = [self.outlineView itemAtRow:[self.outlineView selectedRow]];
+
+    NSString *fullPath = selectedItem[@"fullPath"];
+
+    if (fullPath != nil)
+    {
+        CFStringRef fullPathRef = (__bridge CFStringRef)(fullPath);
+        CFPropertyListRef propertyList = SCDynamicStoreCopyValue(NULL, fullPathRef);
+        NSDictionary *value = CFBridgingRelease(propertyList);
+
+        [self.textView setString:[value description]];
+    }
+    else
+    {
+        [self.textView setString:@""];
+    }
+}
 
 #pragma mark -
 
